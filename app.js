@@ -3,9 +3,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mockData = require('./data');
+const mongo = require('./mongo/mongo');
 
 // Require Routes
-const books = require('./routes/books')
+const sets = require('./routes/sets')
 
 // Constants
 const PORT = 8000;
@@ -14,7 +15,6 @@ const HOST = '0.0.0.0';
 // App
 const app = express();
 
-app.use(bodyParser.json)
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS, PUT, POST, DELETE');
@@ -22,9 +22,10 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use(bodyParser.json())
 // Apply Routes
-app.use('/books', books);
 
+app.use('/sets', sets);
 
 app.get('/', (req, res) => {
   res.send('Hello world\n');
@@ -34,7 +35,8 @@ app.get('/data', (req, res) => {
   res.json(mockData.data);
 });
 
-
-
-app.listen(PORT, HOST);
-console.log(`Running on http://${HOST}:${PORT}`);
+mongo.connectToServer((err)=> {
+  app.listen(PORT, HOST, () => {
+    console.log(`Running on http://${HOST}:${PORT}`);
+  });
+});
