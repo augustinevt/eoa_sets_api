@@ -27,9 +27,24 @@ router.post('/', async (req, res) => {
   try {
     let insertedDocument = await db.collection('sets').insertOne(newSet);
 
+    console.log(insertedDocument.insertedId)
     res.json(insertedDocument.insertedId)
   } catch (e) {
 console.log(e)
+    res.status(503).json({message: e});
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  const db = mongo.getDB();
+  const setId = req.params.id;
+  let responseData = null;
+  try {
+    await db.collection('sets').remove({ _id: mongo.ObjectID(setId) });
+
+    res.json({setId: setId})
+  } catch (e) {
+    console.log(e)
     res.status(503).json({message: e});
   }
 });
